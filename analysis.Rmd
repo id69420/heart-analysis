@@ -14,19 +14,53 @@ knitr::opts_chunk$set(echo = FALSE, fig.align = 'center')
 
 ```{r, load-packages, include = FALSE}
 # load packages
+library(caret)
+library(tidyverse)
 ```
 
 ```{r read-full-data, warning = FALSE, message = FALSE}
 # read full data
 hd = readr::read_csv("data/hd.csv")
+```
 
-# clean data: remove variables missing over a third of data, then remove rows with missing data
-na_prop = function(x) {
+```{r read-full-data, warning = FALSE, message = FALSE}
+# test-train split
+set.seed(42)
+hd_idx = createDataPartition(hd$num, p = 0.80, list = FALSE)
+hd_trn = hd[hd_idx, ]
+hd_tst = hd[-hd_idx, ]
+```
+
+```{r read-full-data, warning = FALSE, message = FALSE}
+# function to determine proportion of NAs in a vector
+na_prop = function(x){
   mean(is.na(x))
 }
 
-hd_clean = na.omit(hd[, !sapply(hd, na_prop) > 0.33])
+# clean train dataset of columns containing over 30% NAs
+hd_trn = hd_trn[, !sapply(hd_trn, na_prop) > 0.30]
+
+# coerce character variables into factors
+hd_trn$num = factor(hd_trn$num)
+hd_trn$location = factor(hd_trn$location)
+hd_trn$cp = factor(hd_trn$cp)
+hd_trn$sex = factor(hd_trn$sex)
+hd_trn$fbs = factor(hd_trn$fbs)
+hd_trn$restecg = factor(hd_trn$restecg)
+hd_trn$exang = factor(hd_trn$exang)
+
+# clean "hidden" missing data (cholesterol of 0)
+
 ```
+
+```{r read-full-data, warning = FALSE, message = FALSE}
+
+```
+
+```{r}
+skimr::skim(hd_trn)
+```
+
 
 ***
 
