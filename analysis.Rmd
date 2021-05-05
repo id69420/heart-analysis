@@ -1,7 +1,7 @@
 ---
-title: "Title of Analysis Goes Here"
-author: "Your Name (netid@illinois.edu)"
-date: "Insert Date Here"
+title: "Predicting Heart Disease"
+author: "Jesse Yan (netid@illinois.edu)"
+date: "5/5/2021"
 output:
   html_document: 
     theme: default
@@ -19,6 +19,13 @@ knitr::opts_chunk$set(echo = FALSE, fig.align = 'center')
 ```{r read-full-data, warning = FALSE, message = FALSE}
 # read full data
 hd = readr::read_csv("data/hd.csv")
+
+# clean data: remove variables missing over a third of data, then remove rows with missing data
+na_prop = function(x) {
+  mean(is.na(x))
+}
+
+hd_clean = na.omit(hd[, !sapply(hd, na_prop) > 0.33])
 ```
 
 ***
@@ -31,7 +38,7 @@ hd = readr::read_csv("data/hd.csv")
 
 ## Introduction
 
-Write your introduction here.
+Heart disease is one of the deadliest diseases in America. This analysis aims to help solve this issue by creating a tool that can screen for heart disease. The data for this project comes from the UCI Machine Learning Repository, collected from Cleveland Clinic Foundation; Hungarian Institute of Cardiology, Budapest; V.A. Medical Center, Long Beach, CA; and University Hospital, Zurich, Switzerland. 
 
 ***
 
