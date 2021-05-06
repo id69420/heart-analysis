@@ -192,9 +192,9 @@ As seen above, the accuracy (80.15%) and specificity (76.46%) are well above the
 
 ## Discussion
 
-The model selected is overly simple, screening for heart disease based off of one variable. This tells us that asymptomatic chest pain is the greatest predictor of heart disease. Note that this does not imply causation.
+The model selected is overly simple, screening for heart disease based off of one variable. This tells us that asymptomatic chest pain is the greatest predictor of heart disease. This means it can be used to screen for heart disease. Note that this does not imply causation.
 
-Future analysis should aim to be more nuanced. This analysis condensed four severities of heart disease into one classification of heart disease. In addition, many observations were omitted due to missing data. Future analyses should attempt to get the most out of that data.
+Future analysis should aim to be more nuanced. This analysis condensed four severities of heart disease into one classification of heart disease. In addition, many observations were omitted due to missing data. Future analyses should attempt to get the most out of that data. Future analyses should also use more recent data.
 
 ***
 
@@ -205,3 +205,11 @@ Below is the no information rate of train data for comparison with the accuracy 
 ```{r, nir, warning = FALSE, message = FALSE}
 sum(hd_trn$num == "v0")/nrow(hd_trn)
 ```
+
+
+Credit goes to the following for their contribution in collecting this data:
+
+Hungarian Institute of Cardiology. Budapest: Andras Janosi, M.D.
+University Hospital, Zurich, Switzerland: William Steinbrunn, M.D.
+University Hospital, Basel, Switzerland: Matthias Pfisterer, M.D.
+V.A. Medical Center, Long Beach and Cleveland Clinic Foundation: Robert Detrano, M.D., Ph.D.
