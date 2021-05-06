@@ -16,26 +16,52 @@ knitr::opts_chunk$set(echo = FALSE, fig.align = 'center')
 # load packages
 library(caret)
 library(tidyverse)
+library(rpart.plot)
 ```
 
-```{r read-full-data, warning = FALSE, message = FALSE}
+```{r, read-full-data, warning = FALSE, message = FALSE}
 # read full data
 hd = readr::read_csv("data/hd.csv")
-```
 
-```{r read-full-data, warning = FALSE, message = FALSE}
 # test-train split
 set.seed(42)
 hd_idx = createDataPartition(hd$num, p = 0.80, list = FALSE)
 hd_trn = hd[hd_idx, ]
 hd_tst = hd[-hd_idx, ]
 ```
+***
 
-```{r read-full-data, warning = FALSE, message = FALSE}
+## Abstract
+
+> Heart disease is one of the deadliest diseases in the world. This analysis aims to help solve this issue by creating a tool that can screen for heart disease. This analysis finds that the best predictor to look at when performing a preliminary screening for heart disease is asymptomatic chest pain. Future analyses should be more nuanced and look into omitted observations.
+
+***
+
+## Introduction
+
+Heart disease is one of the deadliest diseases in the world. This analysis aims to help solve this issue by creating a tool that can screen for heart disease. The data for this project comes from the UCI Machine Learning Repository, collected from Cleveland Clinic Foundation; Hungarian Institute of Cardiology, Budapest; V.A. Medical Center, Long Beach, CA; and University Hospital, Zurich, Switzerland. 
+
+***
+
+## Methods
+
+The focus of this analysis is preliminary screening of heart disease. As such, it will rely on easily collected data and a simple model to follow along with.
+
+### Data
+
+The data is first split into train and test sets. Since this analysis focuses on easily collected data, variables missing data from over 30% of the observations were omitted. In addition, the cholesterol data contained missing data that was input as 0, which was set as omitted for this analysis. All observations containing omissions were then removed, reducing the total observations from 920 to 661. 
+
+```{r, data-processing, warning = FALSE, message = FALSE}
 # function to determine proportion of NAs in a vector
 na_prop = function(x){
   mean(is.na(x))
 }
+
+# clean "hidden" missing data (cholesterol of 0)
+hd_trn[which(hd_trn$chol == 0), ]$chol = NA
+
+# turn heart disease variable into binary
+hd_trn[which(hd_trn$num != "v0"), ]$num = "v1"
 
 # clean train dataset of columns containing over 30% NAs
 hd_trn = hd_trn[, !sapply(hd_trn, na_prop) > 0.30]
@@ -49,59 +75,133 @@ hd_trn$fbs = factor(hd_trn$fbs)
 hd_trn$restecg = factor(hd_trn$restecg)
 hd_trn$exang = factor(hd_trn$exang)
 
-# clean "hidden" missing data (cholesterol of 0)
-
+# remove observations with NAs
+hd_trn = na.omit(hd_trn)
 ```
 
-```{r read-full-data, warning = FALSE, message = FALSE}
+Below is a summary of the train data:
 
+```{r, train-summary, warning = FALSE, message = FALSE}
+skimr::skim((hd_trn))
 ```
 
-```{r}
-skimr::skim(hd_trn)
-```
-
-
-***
-
-## Abstract
-
-> Abstract text goes here.
-
-***
-
-## Introduction
-
-Heart disease is one of the deadliest diseases in America. This analysis aims to help solve this issue by creating a tool that can screen for heart disease. The data for this project comes from the UCI Machine Learning Repository, collected from Cleveland Clinic Foundation; Hungarian Institute of Cardiology, Budapest; V.A. Medical Center, Long Beach, CA; and University Hospital, Zurich, Switzerland. 
-
-***
-
-## Methods
-
-Describe the methods used in this section.
-
-### Data
-
-Specifically describe the data and how it is used here.
 
 ### Modeling
 
-Discuss your modeling and validation strategy here.
+With the focus on a simple preliminary screen, a decision tree model is optimal for this analysis, since any person can follow the tree as long as data is collected. However, this analysis will focus on minimizing false positives (no heart disease as positive) since a misleading diagnosis of no heart disease can delay treatment and worsen health outcomes, which is more damaging than a preliminary diagnosis of heart disease and finding out the diagnosis is wrong upon further testing.
+
+The following code sets up two models to be 5-fold cross-validated on the train dataset. The first model is selected based on best accuracy, while the second model is selected based on best specificity (which minimizes false positives), both within one standard deviation.
+
+```{r}
+# set up 5-fold cross-validation and select best model within 1 standard deviation
+cv_5 = trainControl(method = "cv", number = 5, selectionFunction = "oneSE")
+
+# set up parameters to select model based on sensitivity
+cv_5_sens = trainControl(
+  method = "cv", 
+  number = 5, 
+  classProbs = TRUE,
+  summaryFunction = twoClassSummary,
+  selectionFunction = "oneSE")
+
+# set up tuning parameters for decision tree model
+hd_tree_tune = expand.grid(
+  cp = c(0, 0.0001, 0.001, 0.01, 0.01, 0.1, 1)
+)
+
+# train model
+hd_tree_mod = train(
+  form = num ~ .,
+  data = hd_trn,
+  method = "rpart",
+  trControl = cv_5,
+  tuneGrid = hd_tree_tune
+)
+
+# train model based on Specificity
+hd_tree_mod_sens = train(
+  form = num ~ .,
+  data = hd_trn,
+  method = "rpart",
+  metric = "Spec",
+  trControl = cv_5_sens,
+  tuneGrid = hd_tree_tune
+)
+```
+
+
+Now to view the models:
+
+```{r, view-models, warning = FALSE, message = FALSE}
+# view models
+hd_tree_mod
+hd_tree_mod_sens
+```
+
+
+As seen above, they both select the same model with cp = 0.1. Taking a look at the decision tree below, we can see the best predictor of heart disease is cp4, which is asymptomatic chest pain.
+
+```{r, decision-tree, warning = FALSE, message = FALSE}
+# view decision tree
+rpart.plot(hd_tree_mod$finalModel)
+```
 
 ***
 
 ## Results
 
-State your results here.
+```{r, test-data, warning = FALSE, message = FALSE}
+# apply train data treatment to test data
+
+# clean "hidden" missing data (cholesterol of 0)
+hd_tst[which(hd_tst$chol == 0), ]$chol = NA
+
+# turn heart disease variable into binary
+hd_tst[which(hd_tst$num != "v0"), ]$num = "v1"
+
+# clean train dataset of columns containing over 30% NAs
+hd_tst = hd_tst[, !sapply(hd_tst, na_prop) > 0.30]
+
+# coerce character variables into factors
+hd_tst$num = factor(hd_tst$num)
+hd_tst$location = factor(hd_tst$location)
+hd_tst$cp = factor(hd_tst$cp)
+hd_tst$sex = factor(hd_tst$sex)
+hd_tst$fbs = factor(hd_tst$fbs)
+hd_tst$restecg = factor(hd_tst$restecg)
+hd_tst$exang = factor(hd_tst$exang)
+
+# remove observations with NAs
+hd_tst = na.omit(hd_tst)
+```
+
+Now to look at the model performance on the test dataset. After applying the treatment of the train data on the test data, the chosen model predicts on the test data, and a confusion matrix is generated:
+
+```{r}
+# use model to predict with test data
+preds = predict(hd_tree_mod, newdata = hd_tst)
+
+# generate confusion matrix
+confusionMatrix(data = preds,
+                reference = hd_tst$num)
+```
+
+As seen above, the accuracy (80.15%) and specificity (76.46%) are well above the no information rate at 50%.
 
 ***
 
 ## Discussion
 
-Discuss your results here.
+The model selected is overly simple, screening for heart disease based off of one variable. This tells us that asymptomatic chest pain is the greatest predictor of heart disease. Note that this does not imply causation.
+
+Future analysis should aim to be more nuanced. This analysis condensed four severities of heart disease into one classification of heart disease. In addition, many observations were omitted due to missing data. Future analyses should attempt to get the most out of that data.
 
 ***
 
 ## Appendix
 
-Place potential additional information here.
+Below is the no information rate of train data for comparison with the accuracy and specificity above.
+
+```{r, nir, warning = FALSE, message = FALSE}
+sum(hd_trn$num == "v0")/nrow(hd_trn)
+```
