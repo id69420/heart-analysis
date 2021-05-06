@@ -166,7 +166,7 @@ pre code {
 
 <h1 class="title toc-ignore">Predicting Heart Disease</h1>
 <h4 class="author">Jesse Yan (<a href="mailto:netid@illinois.edu" class="email">netid@illinois.edu</a>)</h4>
-<h4 class="date">Insert Date Here</h4>
+<h4 class="date">5/5/2021</h4>
 
 </div>
 
@@ -189,41 +189,315 @@ pre code {
 <div id="abstract" class="section level2">
 <h2>Abstract</h2>
 <blockquote>
-<p>Abstract text goes here.</p>
+<p>Heart disease is one of the deadliest diseases in the world. This analysis aims to help solve this issue by creating a tool that can screen for heart disease. This analysis finds that the best predictor to look at when performing a preliminary screening for heart disease is asymptomatic chest pain. Future analyses should be more nuanced and look into omitted observations.</p>
 </blockquote>
 <hr />
 </div>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>Write your introduction here.</p>
+<p>Heart disease is one of the deadliest diseases in the world. This analysis aims to help solve this issue by creating a tool that can screen for heart disease. The data for this project comes from the UCI Machine Learning Repository, collected from Cleveland Clinic Foundation; Hungarian Institute of Cardiology, Budapest; V.A. Medical Center, Long Beach, CA; and University Hospital, Zurich, Switzerland.</p>
 <hr />
 </div>
 <div id="methods" class="section level2">
 <h2>Methods</h2>
-<p>Describe the methods used in this section.</p>
+<p>The focus of this analysis is preliminary screening of heart disease. As such, it will rely on easily collected data and a simple model to follow along with.</p>
 <div id="data" class="section level3">
 <h3>Data</h3>
-<p>Specifically describe the data and how it is used here.</p>
+<p>The data is first split into train and test sets. Since this analysis focuses on easily collected data, variables missing data from over 30% of the observations were omitted. In addition, the cholesterol data contained missing data that was input as 0, which was set as omitted for this analysis. All observations containing omissions were then removed, reducing the total observations from 920 to 661.</p>
+<p>Below is a summary of the train data:</p>
+<table>
+<caption>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">(hd_trn)</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">525</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">12</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">factor</td>
+<td align="left">7</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">5</td>
+</tr>
+<tr class="even">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: factor</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="left">ordered</th>
+<th align="right">n_unique</th>
+<th align="left">top_counts</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">sex</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">FALSE</td>
+<td align="right">2</td>
+<td align="left">1: 395, 0: 130</td>
+</tr>
+<tr class="even">
+<td align="left">cp</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">FALSE</td>
+<td align="right">4</td>
+<td align="left">4: 271, 2: 115, 3: 112, 1: 27</td>
+</tr>
+<tr class="odd">
+<td align="left">fbs</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">FALSE</td>
+<td align="right">2</td>
+<td align="left">0: 442, 1: 83</td>
+</tr>
+<tr class="even">
+<td align="left">restecg</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">FALSE</td>
+<td align="right">3</td>
+<td align="left">0: 319, 2: 134, 1: 72</td>
+</tr>
+<tr class="odd">
+<td align="left">exang</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">FALSE</td>
+<td align="right">2</td>
+<td align="left">0: 325, 1: 200</td>
+</tr>
+<tr class="even">
+<td align="left">num</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">FALSE</td>
+<td align="right">2</td>
+<td align="left">v0: 279, v1: 246</td>
+</tr>
+<tr class="odd">
+<td align="left">location</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">FALSE</td>
+<td align="right">3</td>
+<td align="left">cl: 244, hu: 201, va: 80, ch: 0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">age</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">52.74</td>
+<td align="right">9.51</td>
+<td align="right">28</td>
+<td align="right">46</td>
+<td align="right">54.0</td>
+<td align="right">59.0</td>
+<td align="right">77.0</td>
+<td align="left">▂▅▇▆▁</td>
+</tr>
+<tr class="even">
+<td align="left">trestbps</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">132.78</td>
+<td align="right">17.13</td>
+<td align="right">92</td>
+<td align="right">120</td>
+<td align="right">130.0</td>
+<td align="right">140.0</td>
+<td align="right">200.0</td>
+<td align="left">▂▇▅▂▁</td>
+</tr>
+<tr class="odd">
+<td align="left">chol</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">246.33</td>
+<td align="right">59.86</td>
+<td align="right">85</td>
+<td align="right">208</td>
+<td align="right">240.0</td>
+<td align="right">275.0</td>
+<td align="right">603.0</td>
+<td align="left">▂▇▂▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">thalach</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">140.87</td>
+<td align="right">25.07</td>
+<td align="right">69</td>
+<td align="right">122</td>
+<td align="right">142.0</td>
+<td align="right">160.0</td>
+<td align="right">202.0</td>
+<td align="left">▁▅▇▇▂</td>
+</tr>
+<tr class="odd">
+<td align="left">oldpeak</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0.90</td>
+<td align="right">1.07</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0.5</td>
+<td align="right">1.5</td>
+<td align="right">6.2</td>
+<td align="left">▇▃▁▁▁</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="modeling" class="section level3">
 <h3>Modeling</h3>
-<p>Discuss your modeling and validation strategy here.</p>
+<p>With the focus on a simple preliminary screen, a decision tree model is optimal for this analysis, since any person can follow the tree as long as data is collected. However, this analysis will focus on minimizing false positives (no heart disease as positive) since a misleading diagnosis of no heart disease can delay treatment and worsen health outcomes, which is more damaging than a preliminary diagnosis of heart disease and finding out the diagnosis is wrong upon further testing.</p>
+<p>The following code sets up two models to be 5-fold cross-validated on the train dataset. The first model is selected based on best accuracy, while the second model is selected based on best specificity (which minimizes false positives), both within one standard deviation.</p>
+<p>Now to view the models:</p>
+<pre><code>## CART 
+## 
+## 525 samples
+##  11 predictor
+##   2 classes: &#39;v0&#39;, &#39;v1&#39; 
+## 
+## No pre-processing
+## Resampling: Cross-Validated (5 fold) 
+## Summary of sample sizes: 419, 421, 420, 420, 420 
+## Resampling results across tuning parameters:
+## 
+##   cp     Accuracy   Kappa    
+##   0e+00  0.7410692  0.4809947
+##   1e-04  0.7410692  0.4809947
+##   1e-03  0.7410692  0.4809947
+##   1e-02  0.7446427  0.4845013
+##   1e-01  0.7446430  0.4879371
+##   1e+00  0.5314296  0.0000000
+## 
+## Accuracy was used to select the optimal model using  the one SE rule.
+## The final value used for the model was cp = 0.1.</code></pre>
+<pre><code>## CART 
+## 
+## 525 samples
+##  11 predictor
+##   2 classes: &#39;v0&#39;, &#39;v1&#39; 
+## 
+## No pre-processing
+## Resampling: Cross-Validated (5 fold) 
+## Summary of sample sizes: 420, 421, 419, 420, 420 
+## Resampling results across tuning parameters:
+## 
+##   cp     ROC        Sens       Spec     
+##   0e+00  0.8145739  0.7381169  0.7276735
+##   1e-04  0.8145739  0.7381169  0.7276735
+##   1e-03  0.8145739  0.7381169  0.7276735
+##   1e-02  0.8015948  0.7703896  0.7073469
+##   1e-01  0.7507078  0.7494156  0.7520000
+##   1e+00  0.5000000  1.0000000  0.0000000
+## 
+## Spec was used to select the optimal model using  the one SE rule.
+## The final value used for the model was cp = 0.1.</code></pre>
+<p>As seen above, they both select the same model with cp = 0.1. Taking a look at the decision tree below, we can see the best predictor of heart disease is cp4, which is asymptomatic chest pain.</p>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABUAAAAPACAMAAADDuCPrAAACEFBMVEUAAAAAADEAADIAADgAADoAAFYAAFoAAGMAAGYAJzEAJ1YAJ3kANTgANWMANYsAODIAOFoAOH4AOjoAOmYAOpAARpkAXrAAYp8AZrYYAAAYJzEYRnkYRpkYYrgrAAArJwArJzErYrgrfLgrfNYyAAAyXosyXrAyhNQzAAAzODIzOFozYn4zYp8zisE6AAA6OgA6Ojo6OmY6ZpA6ZrY6kLY6kNs8JwA8RjE8YjE8ldZMRgBMRjFMYlZMfFZMlbhMldZMrtZZAABZNQBZNThZhNRZqNRZqPdcAABcOABcODJcYjFcYjJcYlZcfFZcip9cisFclZlcldZcrtZcr8Fcr+BmAABmOgBmOjpmZjpmZpBmkJBmkLZmkNtmtttmtv9rfFZrlXlrlZlrlbhrrplrrrhrrtZ9NQB9Xjh9hDh9yfeAOACAYjKAr8GA0uCQOgCQZjqQtraQ2/+eXgCeXjiehGOeqGOeydSeyfee6/ejYgCjYjKjilqjr1qj0sGj0uCj9eC2ZgC2Zjq2kDq2kGa2ttu229u22/+2/7a2//+/hDi/hGO/qGO/qIu/ybC/6/fFijLFilrFr1rFr37F0p/F0uDF9eDbkDrbtmbbtpDb25Db2//b///eqGPeyYveybDeydTe67De69Te6/flr1rl0n7l0p/l0sHl9Z/l9cHl9eD/tmb/25D/27b//7b//9v///83m/zJAAAACXBIWXMAAB2HAAAdhwGP5fFlAAAgAElEQVR4nO3d+4MdZ3nY8fGFS6ApBDDgJpA0dmKlgJOUkDQi5dZiu2pIKGB6ISC74LZpGihqCxE0iXoJRdBGTVoEqWUKkl3bwlj/YmfOdc45c27P7r7zvq8/nx9iabUr7fLM+83MmTkzzR0AQpqxvwGAUgkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKECQgAIECShAkIACBAkoQJCAAgQJKLloDjb2dwoztkXGdng4hZTM2AYZ0WoPbx5IRMmF7Y+RHB/O7SEd+2fhlcqmxyhO2M6NiI798/DKZMNjBKcTz5WKjv0j8YpkuyO9082nhDIaWx2pnX4+ZwW1MZOabY7EzqSfN+2EMgabHGmdUT5nCR37p+MVxhZHUmfYTwUlORscKZ1pPxWU1GxvJHTG/VRQErO5kc6Z91NBScvWRjpn38+uoGP/lLyC2NpIJtbP7//LB5vmnl/4qoKSHxsbqcQO4L/94PTN7vf8/YMDaqMmFdsaqYT6eWN5y6VH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" width="672" style="display: block; margin: auto;" /></p>
 <hr />
 </div>
 </div>
 <div id="results" class="section level2">
 <h2>Results</h2>
-<p>State your results here.</p>
+<p>Now to look at the model performance on the test dataset. After applying the treatment of the train data on the test data, the chosen model predicts on the test data, and a confusion matrix is generated:</p>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction v0 v1
+##         v0 57 16
+##         v1 11 52
+##                                           
+##                Accuracy : 0.8015          
+##                  95% CI : (0.7245, 0.8649)
+##     No Information Rate : 0.5             
+##     P-Value [Acc &gt; NIR] : 3.524e-13       
+##                                           
+##                   Kappa : 0.6029          
+##                                           
+##  Mcnemar&#39;s Test P-Value : 0.4414          
+##                                           
+##             Sensitivity : 0.8382          
+##             Specificity : 0.7647          
+##          Pos Pred Value : 0.7808          
+##          Neg Pred Value : 0.8254          
+##              Prevalence : 0.5000          
+##          Detection Rate : 0.4191          
+##    Detection Prevalence : 0.5368          
+##       Balanced Accuracy : 0.8015          
+##                                           
+##        &#39;Positive&#39; Class : v0              
+## </code></pre>
+<p>As seen above, the accuracy (80.15%) and specificity (76.46%) are well above the no information rate at 50%.</p>
 <hr />
 </div>
 <div id="discussion" class="section level2">
 <h2>Discussion</h2>
-<p>Discuss your results here.</p>
+<p>The model selected is overly simple, screening for heart disease based off of one variable. This tells us that asymptomatic chest pain is the greatest predictor of heart disease. Note that this does not imply causation.</p>
+<p>Future analysis should aim to be more nuanced. This analysis condensed four severities of heart disease into one classification of heart disease. In addition, many observations were omitted due to missing data. Future analyses should attempt to get the most out of that data.</p>
 <hr />
 </div>
 <div id="appendix" class="section level2">
 <h2>Appendix</h2>
-<p>Place potential additional information here.</p>
+<p>Below is the no information rate of train data for comparison with the accuracy and specificity above.</p>
+<pre><code>## [1] 0.5314286</code></pre>
 </div>
 
 
